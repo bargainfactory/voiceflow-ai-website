@@ -3,35 +3,36 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Phone, PhoneOff, Send, Mic, Volume2 } from "lucide-react";
+import { useLanguage } from "../i18n/LanguageContext";
 
 type Message = { role: "ai" | "user"; text: string };
 
-const initialMessages: Message[] = [
-  { role: "ai", text: "Hey there! I\u2019m Alex from VoiceFlow AI. Really happy you stopped by. What can I help you with today?" },
-];
-
-// Alex Rivera voice script — psychology-optimized, TTS-tuned for natural prosody.
-// Double commas = breath pauses. Ellipsis = thoughtful beat. Short sentences only.
-// Each line has unique cadence (rate/pitch) to eliminate monotone delivery.
-// Pause = ms of silence after the line before the next one starts.
 const voiceScript = [
-  { text: "Hello!,, Thanks for calling VoiceFlow AI.,, This is Alex... how's it going today?", rate: 0.88, pitch: 1.0, pause: 1400 },
-  { text: "So,, I'm really glad you called.,, I'd love to help you figure out,, how we can make things easier for your business.", rate: 0.86, pitch: 0.97, pause: 1100 },
-  { text: "Let me give you the quick version of what we do.", rate: 0.9, pitch: 0.98, pause: 700 },
-  { text: "Basically... we build A.I. agents,, that talk to your customers.,, Just like I'm talking to you right now.,, Pretty cool, right?", rate: 0.87, pitch: 0.96, pause: 1200 },
-  { text: "And honestly?,, The results have been incredible.,, I've helped hundreds of businesses with exactly this.", rate: 0.88, pitch: 0.98, pause: 900 },
-  { text: "Most of our clients,, they're cutting support costs,, by about 70 percent.,, Some even more than that.", rate: 0.85, pitch: 0.95, pause: 1100 },
-  { text: "Here's the part I love though.,, It works 24 7.,, So at 3 AM,,  when nobody wants to answer the phone... your A.I. agent's got it covered.", rate: 0.84, pitch: 0.97, pause: 1300 },
-  { text: "Appointment booking,, lead qualification,, customer support... all handled,, automatically.", rate: 0.87, pitch: 0.96, pause: 900 },
-  { text: "And we use some really great tech.,, Voiceflow for conversations.,, ElevenLabs for voice.,, Twilio for the phone system.", rate: 0.86, pitch: 0.96, pause: 1000 },
-  { text: "So,, hmm,, here's what I'd suggest,,  if you're open to it.", rate: 0.9, pitch: 0.98, pause: 800 },
-  { text: "Over on the right side of your screen,,  there's a chat you can try.,, Go ahead and ask me anything in there.,, I'll respond just like I would for your customers.", rate: 0.86, pitch: 0.97, pause: 1100 },
-  { text: "And if you like what you see?,, We've got a few pilot slots open this month.,, We can set one up for you,, no pressure at all.", rate: 0.85, pitch: 0.98, pause: 1000 },
-  { text: "Does that sound good?,, Awesome.,, I'm really happy you reached out.,, Talk to you soon!", rate: 0.9, pitch: 1.01, pause: 0 },
+  { text: "Hello, thanks for calling VoiceFlow AI", rate: 0.88, pitch: 1.0, pause: 600 },
+  { text: "This is Alex, how's it going today", rate: 0.88, pitch: 1.0, pause: 1400 },
+  { text: "So I'm really glad you called", rate: 0.87, pitch: 0.97, pause: 500 },
+  { text: "I'd love to help you figure out how we can make things easier for your business", rate: 0.86, pitch: 0.97, pause: 1100 },
+  { text: "Let me give you the quick version of what we do", rate: 0.9, pitch: 0.98, pause: 700 },
+  { text: "Basically we build AI agents that talk to your customers", rate: 0.87, pitch: 0.96, pause: 500 },
+  { text: "Just like I'm talking to you right now, pretty cool right", rate: 0.88, pitch: 0.97, pause: 1200 },
+  { text: "And honestly, the results have been incredible", rate: 0.88, pitch: 0.98, pause: 500 },
+  { text: "I've helped hundreds of businesses with exactly this", rate: 0.87, pitch: 0.97, pause: 900 },
+  { text: "Most of our clients are cutting their support costs by about 70 percent", rate: 0.85, pitch: 0.95, pause: 500 },
+  { text: "Some even more than that", rate: 0.88, pitch: 0.96, pause: 1100 },
+  { text: "Here's the part I love though, it works twenty four seven", rate: 0.86, pitch: 0.97, pause: 500 },
+  { text: "So at 3 AM when nobody wants to answer the phone, your AI agent's got it covered", rate: 0.84, pitch: 0.97, pause: 1300 },
+  { text: "Appointment booking, lead qualification, customer support, all handled automatically", rate: 0.87, pitch: 0.96, pause: 900 },
+  { text: "And we use some really great technology", rate: 0.87, pitch: 0.96, pause: 400 },
+  { text: "Voiceflow for conversations, Eleven Labs for voice, and Twilio for the phone system", rate: 0.86, pitch: 0.96, pause: 1000 },
+  { text: "So here's what I'd suggest if you're open to it", rate: 0.9, pitch: 0.98, pause: 800 },
+  { text: "Over on the right side of your screen there's a chat you can try", rate: 0.87, pitch: 0.97, pause: 500 },
+  { text: "Go ahead and ask me anything in there, I'll respond just like I would for your customers", rate: 0.86, pitch: 0.97, pause: 1100 },
+  { text: "And if you like what you see, we've got a few pilot slots open this month", rate: 0.86, pitch: 0.98, pause: 500 },
+  { text: "We can set one up for you, no pressure at all", rate: 0.85, pitch: 0.98, pause: 1000 },
+  { text: "Does that sound good", rate: 0.9, pitch: 1.01, pause: 600 },
+  { text: "Awesome, I'm really happy you reached out, talk to you soon", rate: 0.9, pitch: 1.01, pause: 0 },
 ];
 
-// Chat responses: Alex's warm, conversational voice with psychological compliance baked in.
-// Reciprocity first, then value, then soft micro-commitment question.
 const chatResponses: Record<string, string> = {
   pricing: "Great question! So it starts at $497 a month for the basics. But honestly, most folks go with the Professional at $997 because you get everything... chatbot, voice agent, CRM integration, the whole deal. Want me to break down what\u2019s included?",
   price: "Sure thing! The Starter is $497 a month, and the Professional is $997 which is our most popular by far. It\u2019s got both chatbot and voice agent plus all the integrations. What kind of budget are you working with? I can help find the right fit.",
@@ -109,10 +110,13 @@ function playConnectTone(audioCtx: AudioContext) {
 }
 
 export default function Demo() {
+  const { t } = useLanguage();
   const [callState, setCallState] = useState<"idle" | "ringing" | "connected" | "speaking">("idle");
   const [callTime, setCallTime] = useState(0);
   const [spokenLine, setSpokenLine] = useState("");
-  const [messages, setMessages] = useState(initialMessages);
+  const [messages, setMessages] = useState<Message[]>([
+    { role: "ai", text: t.demo.chatGreeting },
+  ]);
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
   const [barHeights, setBarHeights] = useState([12, 17, 22, 17, 12]);
@@ -180,7 +184,7 @@ export default function Demo() {
     utterance.rate = line.rate;
     utterance.pitch = line.pitch;
 
-    const displayText = line.text.replace(/,,\s*/g, " ").replace(/\.\.\./g, "...").replace(/\s+/g, " ").trim();
+    const displayText = line.text;
 
     utterance.onstart = () => {
       setCallState("speaking");
@@ -275,10 +279,10 @@ export default function Demo() {
           className="text-center mb-16"
         >
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-            Experience the AI Agent <span className="gradient-text">Live</span>
+            {t.demo.headline} <span className="gradient-text">{t.demo.headlineAccent}</span>
           </h2>
           <p className="text-slate-400 max-w-2xl mx-auto text-lg">
-            Meet Alex Rivera &mdash; your AI customer success specialist. Try voice or chat.
+            {t.demo.subtitle}
           </p>
         </motion.div>
 
@@ -291,7 +295,7 @@ export default function Demo() {
           >
             <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
               <Mic className="w-5 h-5 text-emerald-400" />
-              Talk to Alex
+              {t.demo.voiceTitle}
             </h3>
 
             <div className="bg-slate-900/80 rounded-2xl p-8 text-center min-h-[320px] flex flex-col items-center justify-center">
@@ -300,15 +304,15 @@ export default function Demo() {
                   <div className="w-20 h-20 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-4">
                     <Phone className="w-8 h-8 text-emerald-400" />
                   </div>
-                  <p className="text-white font-medium mb-1">Alex Rivera</p>
-                  <p className="text-slate-400 text-sm mb-1">AI Customer Success Specialist</p>
-                  <p className="text-slate-600 text-xs mb-6">Speakers on &bull; Click to connect</p>
+                  <p className="text-white font-medium mb-1">{t.demo.alexName}</p>
+                  <p className="text-slate-400 text-sm mb-1">{t.demo.alexRole}</p>
+                  <p className="text-slate-600 text-xs mb-6">{t.demo.speakersOn}</p>
                   <button
                     onClick={startCall}
                     className="animate-pulse-glow px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition-all hover:scale-105"
                   >
                     <Volume2 className="w-5 h-5 inline mr-2" />
-                    Call Alex
+                    {t.demo.callAlex}
                   </button>
                 </>
               ) : callState === "ringing" ? (
@@ -316,15 +320,15 @@ export default function Demo() {
                   <div className="w-20 h-20 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-4 animate-pulse">
                     <Phone className="w-8 h-8 text-emerald-400" />
                   </div>
-                  <p className="text-white font-medium mb-1">Alex Rivera</p>
-                  <p className="text-yellow-400 text-sm mb-1 animate-pulse">Ringing...</p>
-                  <p className="text-slate-600 text-xs mb-6">Connecting you now</p>
+                  <p className="text-white font-medium mb-1">{t.demo.alexName}</p>
+                  <p className="text-yellow-400 text-sm mb-1 animate-pulse">{t.demo.ringing}</p>
+                  <p className="text-slate-600 text-xs mb-6">{t.demo.connecting}</p>
                   <button
                     onClick={endCall}
                     className="px-8 py-3 bg-red-600 hover:bg-red-500 text-white font-semibold rounded-xl transition-all"
                   >
                     <PhoneOff className="w-4 h-4 inline mr-2" />
-                    Cancel
+                    {t.demo.cancel}
                   </button>
                 </>
               ) : (
@@ -340,11 +344,11 @@ export default function Demo() {
                       />
                     ))}
                   </div>
-                  <p className="text-white font-medium text-sm mb-0.5">Alex Rivera</p>
+                  <p className="text-white font-medium text-sm mb-0.5">{t.demo.alexName}</p>
                   <p className={"text-xs mb-3 " + (
                     callState === "speaking" ? "text-emerald-400" : "text-slate-500"
                   )}>
-                    {callState === "speaking" ? "Speaking..." : "Listening..."}
+                    {callState === "speaking" ? t.demo.speaking : t.demo.listening}
                   </p>
                   {spokenLine && (
                     <p className="text-slate-400 text-xs italic mb-3 max-w-[280px] mx-auto leading-relaxed min-h-[40px]">
@@ -362,14 +366,14 @@ export default function Demo() {
                     className="px-8 py-3 bg-red-600 hover:bg-red-500 text-white font-semibold rounded-xl transition-all"
                   >
                     <PhoneOff className="w-4 h-4 inline mr-2" />
-                    End Call
+                    {t.demo.endCall}
                   </button>
                 </>
               )}
             </div>
 
             <p className="text-slate-600 text-xs mt-4 text-center">
-              Demo uses browser speech synthesis &bull; Production uses ElevenLabs Expressive v3
+              {t.demo.poweredVoice}
             </p>
           </motion.div>
 
@@ -381,7 +385,7 @@ export default function Demo() {
           >
             <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
               <Send className="w-5 h-5 text-emerald-400" />
-              Chat with Alex
+              {t.demo.chatTitle}
             </h3>
 
             <div
@@ -431,7 +435,7 @@ export default function Demo() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                placeholder="Ask Alex anything..."
+                placeholder={t.demo.chatPlaceholder}
                 className="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 transition-colors"
               />
               <button
@@ -443,7 +447,7 @@ export default function Demo() {
             </div>
 
             <p className="text-slate-500 text-xs mt-3 text-center">
-              Try: pricing, healthcare, roi, trial, not sure, frustrated, how long, results
+              {t.demo.chatHints}
             </p>
           </motion.div>
         </div>

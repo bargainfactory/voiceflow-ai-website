@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { LanguageProvider } from "../i18n/LanguageContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -21,7 +22,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={inter.variable}>
-      <body className="min-h-screen">{children}</body>
+      <body className="min-h-screen">
+        <LanguageProvider>{children}</LanguageProvider>
+      </body>
     </html>
   );
 }

@@ -2,15 +2,18 @@
 
 import { motion } from "framer-motion";
 import { Phone, Calculator, Bot, Shield, Clock, TrendingDown } from "lucide-react";
-
-const stats = [
-  { icon: Bot, label: "Businesses Served", value: "500+" },
-  { icon: TrendingDown, label: "Cost Reduction", value: "70%" },
-  { icon: Clock, label: "Availability", value: "24/7" },
-  { icon: Shield, label: "Response Time", value: "< 2s" },
-];
+import { useLanguage } from "../i18n/LanguageContext";
 
 export default function Hero() {
+  const { t } = useLanguage();
+
+  const stats = [
+    { icon: Bot, label: t.hero.statBusinesses, value: "500+" },
+    { icon: TrendingDown, label: t.hero.statCost, value: "70%" },
+    { icon: Clock, label: t.hero.statAvailability, value: "24/7" },
+    { icon: Shield, label: t.hero.statResponse, value: "< 2s" },
+  ];
+
   return (
     <section className="relative min-h-screen flex flex-col justify-center grid-bg overflow-hidden pt-16">
       <div className="absolute top-20 left-10 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl animate-float" />
@@ -27,7 +30,7 @@ export default function Hero() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
           </span>
-          Now Powered by GPT-4 + ElevenLabs Voice AI
+          {t.hero.badge}
         </motion.div>
 
         <motion.h1
@@ -36,9 +39,9 @@ export default function Hero() {
           transition={{ delay: 0.15, duration: 0.6 }}
           className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight mb-6"
         >
-          Cut Support Costs 70%
+          {t.hero.headline1}
           <br />
-          <span className="gradient-text">With AI That Actually Talks</span>
+          <span className="gradient-text">{t.hero.headline2}</span>
         </motion.h1>
 
         <motion.p
@@ -47,8 +50,7 @@ export default function Hero() {
           transition={{ delay: 0.3, duration: 0.6 }}
           className="max-w-2xl mx-auto text-lg sm:text-xl text-slate-400 mb-10 leading-relaxed"
         >
-          Custom AI chatbots and voice agents that handle customer service, qualify leads,
-          and book appointments &mdash; 24/7. Built with Voiceflow, ElevenLabs, and Twilio.
+          {t.hero.subtitle}
         </motion.p>
 
         <motion.div
@@ -62,14 +64,14 @@ export default function Hero() {
             className="animate-pulse-glow inline-flex items-center gap-2 px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl text-lg transition-all hover:scale-105"
           >
             <Phone className="w-5 h-5" />
-            Try Live Voice Demo
+            {t.hero.ctaVoice}
           </a>
           <a
             href="#roi"
             className="inline-flex items-center gap-2 px-8 py-4 border border-slate-600 hover:border-emerald-500 text-slate-200 font-semibold rounded-xl text-lg transition-all hover:text-emerald-400"
           >
             <Calculator className="w-5 h-5" />
-            Calculate Your ROI
+            {t.hero.ctaRoi}
           </a>
         </motion.div>
 

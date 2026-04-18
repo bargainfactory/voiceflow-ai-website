@@ -7,27 +7,10 @@ import {
   MessageSquare, Phone, Smartphone, Share2, Globe,
   ArrowRight, ArrowLeft, CheckCircle, Sparkles,
 } from "lucide-react";
-
-const industries = [
-  { icon: Stethoscope, label: "Healthcare" },
-  { icon: Building2, label: "Real Estate" },
-  { icon: ShoppingCart, label: "E-Commerce" },
-  { icon: Scale, label: "Legal" },
-  { icon: Wrench, label: "Home Services" },
-  { icon: HelpCircle, label: "Other" },
-];
-
-const volumes = ["Under 500", "500 - 2,000", "2,000 - 5,000", "5,000+"];
-
-const channels = [
-  { icon: Globe, label: "Website Chat" },
-  { icon: Phone, label: "Phone/Voice" },
-  { icon: MessageSquare, label: "SMS" },
-  { icon: Smartphone, label: "WhatsApp" },
-  { icon: Share2, label: "Social Media" },
-];
+import { useLanguage } from "../i18n/LanguageContext";
 
 export default function QuoteForm() {
+  const { t } = useLanguage();
   const [step, setStep] = useState(1);
   const [industry, setIndustry] = useState("");
   const [volume, setVolume] = useState("");
@@ -37,6 +20,25 @@ export default function QuoteForm() {
   const [phone, setPhone] = useState("");
   const [company, setCompany] = useState("");
   const [submitted, setSubmitted] = useState(false);
+
+  const industries = [
+    { icon: Stethoscope, label: t.solutions.healthcare },
+    { icon: Building2, label: t.solutions.realEstate },
+    { icon: ShoppingCart, label: t.solutions.ecommerce },
+    { icon: Scale, label: t.solutions.legal },
+    { icon: Wrench, label: t.solutions.homeServices },
+    { icon: HelpCircle, label: t.quote.other },
+  ];
+
+  const volumes = [t.quote.vol1, t.quote.vol2, t.quote.vol3, t.quote.vol4];
+
+  const channels = [
+    { icon: Globe, label: t.quote.chWebsite },
+    { icon: Phone, label: t.quote.chPhone },
+    { icon: MessageSquare, label: t.quote.chSMS },
+    { icon: Smartphone, label: t.quote.chWhatsApp },
+    { icon: Share2, label: t.quote.chSocial },
+  ];
 
   const toggleChannel = (ch: string) => {
     setSelectedChannels((prev) =>
@@ -56,8 +58,8 @@ export default function QuoteForm() {
     setSubmitted(true);
   };
 
-  const recommendedPlan = volume === "5,000+" || industry === "Other" ? "Enterprise" : "Professional";
-  const estimatedSavings = volume === "Under 500" ? "$3,500" : volume === "500 - 2,000" ? "$7,500" : volume === "2,000 - 5,000" ? "$15,000" : "$30,000+";
+  const recommendedPlan = volume === t.quote.vol4 || industry === t.quote.other ? t.pricing.enterprise : t.pricing.professional;
+  const estimatedSavings = volume === t.quote.vol1 ? "$3,500" : volume === t.quote.vol2 ? "$7,500" : volume === t.quote.vol3 ? "$15,000" : "$30,000+";
 
   return (
     <section id="quote" className="py-24">
@@ -69,10 +71,10 @@ export default function QuoteForm() {
           className="text-center mb-12"
         >
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-            Get Your <span className="gradient-text">Instant AI Quote</span>
+            {t.quote.headline} <span className="gradient-text">{t.quote.headlineAccent}</span>
           </h2>
           <p className="text-slate-400 text-lg">
-            Answer a few questions and our AI will recommend the perfect solution.
+            {t.quote.subtitle}
           </p>
         </motion.div>
 
@@ -92,13 +94,8 @@ export default function QuoteForm() {
 
               <AnimatePresence mode="wait">
                 {step === 1 && (
-                  <motion.div
-                    key="step1"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                  >
-                    <h3 className="text-lg font-semibold text-white mb-6">What&apos;s your industry?</h3>
+                  <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+                    <h3 className="text-lg font-semibold text-white mb-6">{t.quote.step1}</h3>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                       {industries.map((ind) => (
                         <button
@@ -119,13 +116,8 @@ export default function QuoteForm() {
                 )}
 
                 {step === 2 && (
-                  <motion.div
-                    key="step2"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                  >
-                    <h3 className="text-lg font-semibold text-white mb-6">How many customer interactions per month?</h3>
+                  <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+                    <h3 className="text-lg font-semibold text-white mb-6">{t.quote.step2}</h3>
                     <div className="grid grid-cols-2 gap-3">
                       {volumes.map((v) => (
                         <button
@@ -145,13 +137,8 @@ export default function QuoteForm() {
                 )}
 
                 {step === 3 && (
-                  <motion.div
-                    key="step3"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                  >
-                    <h3 className="text-lg font-semibold text-white mb-6">What channels do you need?</h3>
+                  <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+                    <h3 className="text-lg font-semibold text-white mb-6">{t.quote.step3}</h3>
                     <div className="space-y-3">
                       {channels.map((ch) => (
                         <button
@@ -175,54 +162,21 @@ export default function QuoteForm() {
                 )}
 
                 {step === 4 && (
-                  <motion.div
-                    key="step4"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    className="space-y-4"
-                  >
-                    <h3 className="text-lg font-semibold text-white mb-6">Almost there! Tell us about you.</h3>
-                    <input
-                      type="text"
-                      placeholder="Full Name *"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500"
-                    />
-                    <input
-                      type="email"
-                      placeholder="Email Address *"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500"
-                    />
-                    <input
-                      type="tel"
-                      placeholder="Phone Number"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Company Name"
-                      value={company}
-                      onChange={(e) => setCompany(e.target.value)}
-                      className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500"
-                    />
+                  <motion.div key="step4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
+                    <h3 className="text-lg font-semibold text-white mb-6">{t.quote.step4}</h3>
+                    <input type="text" placeholder={t.quote.nameField + " *"} value={name} onChange={(e) => setName(e.target.value)} className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500" />
+                    <input type="email" placeholder={t.quote.emailField + " *"} value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500" />
+                    <input type="tel" placeholder={t.quote.phoneField} value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500" />
+                    <input type="text" placeholder={t.quote.companyField} value={company} onChange={(e) => setCompany(e.target.value)} className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500" />
                   </motion.div>
                 )}
               </AnimatePresence>
 
               <div className="flex justify-between mt-8">
                 {step > 1 ? (
-                  <button
-                    onClick={() => setStep((s) => s - 1)}
-                    className="flex items-center gap-2 px-4 py-2 text-slate-400 hover:text-white transition-colors text-sm"
-                  >
+                  <button onClick={() => setStep((s) => s - 1)} className="flex items-center gap-2 px-4 py-2 text-slate-400 hover:text-white transition-colors text-sm">
                     <ArrowLeft className="w-4 h-4" />
-                    Back
+                    {t.quote.back}
                   </button>
                 ) : <div />}
 
@@ -231,12 +185,10 @@ export default function QuoteForm() {
                     onClick={() => canAdvance() && setStep((s) => s + 1)}
                     disabled={!canAdvance()}
                     className={"flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm transition-all " + (
-                      canAdvance()
-                        ? "bg-emerald-600 hover:bg-emerald-500 text-white"
-                        : "bg-slate-700 text-slate-500 cursor-not-allowed"
+                      canAdvance() ? "bg-emerald-600 hover:bg-emerald-500 text-white" : "bg-slate-700 text-slate-500 cursor-not-allowed"
                     )}
                   >
-                    Next
+                    {t.quote.next}
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 ) : (
@@ -244,42 +196,36 @@ export default function QuoteForm() {
                     onClick={() => canAdvance() && handleSubmit()}
                     disabled={!canAdvance()}
                     className={"flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm transition-all " + (
-                      canAdvance()
-                        ? "bg-emerald-600 hover:bg-emerald-500 text-white"
-                        : "bg-slate-700 text-slate-500 cursor-not-allowed"
+                      canAdvance() ? "bg-emerald-600 hover:bg-emerald-500 text-white" : "bg-slate-700 text-slate-500 cursor-not-allowed"
                     )}
                   >
-                    Get My Quote
+                    {t.quote.getMyQuote}
                     <Sparkles className="w-4 h-4" />
                   </button>
                 )}
               </div>
             </>
           ) : (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="text-center py-8"
-            >
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-8">
               <div className="w-16 h-16 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-6">
                 <CheckCircle className="w-8 h-8 text-emerald-400" />
               </div>
-              <h3 className="text-2xl font-bold text-white mb-2">Your Quote is Ready!</h3>
-              <p className="text-slate-400 mb-8">Based on your answers, we recommend:</p>
+              <h3 className="text-2xl font-bold text-white mb-2">{t.quote.quoteReady}</h3>
+              <p className="text-slate-400 mb-8">{t.quote.basedOn}</p>
 
               <div className="glass-card rounded-xl p-6 max-w-sm mx-auto mb-6 border-emerald-500/30">
-                <p className="text-emerald-400 font-semibold text-lg mb-2">{recommendedPlan} Plan</p>
+                <p className="text-emerald-400 font-semibold text-lg mb-2">{recommendedPlan} {t.quote.plan}</p>
                 <p className="text-slate-400 text-sm mb-4">
-                  For {industry} with {volume} monthly interactions
+                  {t.quote.forIndustry} {industry} {t.quote.withVolume} {volume} {t.quote.monthlyInteractions}
                 </p>
                 <div className="bg-slate-800/50 rounded-lg p-4">
-                  <p className="text-sm text-slate-400">Estimated Monthly Savings</p>
+                  <p className="text-sm text-slate-400">{t.quote.estSavings}</p>
                   <p className="text-3xl font-bold text-emerald-400">{estimatedSavings}</p>
                 </div>
               </div>
 
               <p className="text-slate-400 text-sm">
-                A specialist will contact you within 2 hours at <span className="text-white">{email}</span>
+                {t.quote.specialistContact} <span className="text-white">{email}</span>
               </p>
 
               <div className="mt-6 flex justify-center gap-2">

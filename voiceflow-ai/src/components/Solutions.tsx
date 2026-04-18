@@ -2,47 +2,50 @@
 
 import { motion } from "framer-motion";
 import { Stethoscope, Building2, ShoppingCart, Scale, Wrench, Users } from "lucide-react";
-
-const industries = [
-  {
-    icon: Stethoscope,
-    title: "Healthcare",
-    description: "Automate patient interactions while maintaining HIPAA compliance.",
-    features: ["Appointment scheduling", "Patient triage", "Insurance verification"],
-  },
-  {
-    icon: Building2,
-    title: "Real Estate",
-    description: "Capture every lead and schedule showings around the clock.",
-    features: ["Lead qualification", "Property information", "Showing scheduling"],
-  },
-  {
-    icon: ShoppingCart,
-    title: "E-Commerce",
-    description: "Instant support that boosts satisfaction and reduces returns.",
-    features: ["Order tracking", "Returns processing", "Product recommendations"],
-  },
-  {
-    icon: Scale,
-    title: "Legal",
-    description: "Streamline client intake and answer common questions instantly.",
-    features: ["Intake forms", "Consultation scheduling", "FAQ handling"],
-  },
-  {
-    icon: Wrench,
-    title: "Home Services",
-    description: "Never miss a service call or emergency dispatch again.",
-    features: ["Booking management", "Instant estimates", "Emergency dispatch"],
-  },
-  {
-    icon: Users,
-    title: "Agencies",
-    description: "White-label AI agents branded for each of your clients.",
-    features: ["White-label solution", "Multi-client dashboard", "Branded experiences"],
-  },
-];
+import { useLanguage } from "../i18n/LanguageContext";
 
 export default function Solutions() {
+  const { t } = useLanguage();
+
+  const industries = [
+    {
+      icon: Stethoscope,
+      title: t.solutions.healthcare,
+      description: t.solutions.healthcareDesc,
+      features: [t.solutions.healthcareF1, t.solutions.healthcareF2, t.solutions.healthcareF3],
+    },
+    {
+      icon: Building2,
+      title: t.solutions.realEstate,
+      description: t.solutions.realEstateDesc,
+      features: [t.solutions.realEstateF1, t.solutions.realEstateF2, t.solutions.realEstateF3],
+    },
+    {
+      icon: ShoppingCart,
+      title: t.solutions.ecommerce,
+      description: t.solutions.ecommerceDesc,
+      features: [t.solutions.ecommerceF1, t.solutions.ecommerceF2, t.solutions.ecommerceF3],
+    },
+    {
+      icon: Scale,
+      title: t.solutions.legal,
+      description: t.solutions.legalDesc,
+      features: [t.solutions.legalF1, t.solutions.legalF2, t.solutions.legalF3],
+    },
+    {
+      icon: Wrench,
+      title: t.solutions.homeServices,
+      description: t.solutions.homeServicesDesc,
+      features: [t.solutions.homeServicesF1, t.solutions.homeServicesF2, t.solutions.homeServicesF3],
+    },
+    {
+      icon: Users,
+      title: t.solutions.agencies,
+      description: t.solutions.agenciesDesc,
+      features: [t.solutions.agenciesF1, t.solutions.agenciesF2, t.solutions.agenciesF3],
+    },
+  ];
+
   return (
     <section id="solutions" className="py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -53,10 +56,10 @@ export default function Solutions() {
           className="text-center mb-16"
         >
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-            AI Solutions <span className="gradient-text">By Industry</span>
+            {t.solutions.headline} <span className="gradient-text">{t.solutions.headlineAccent}</span>
           </h2>
           <p className="text-slate-400 max-w-2xl mx-auto text-lg">
-            Purpose-built AI agents trained on industry-specific knowledge and workflows.
+            {t.solutions.subtitle}
           </p>
         </motion.div>
 
@@ -84,7 +87,7 @@ export default function Solutions() {
                 ))}
               </ul>
               <a href="#demo" className="text-emerald-400 text-sm font-medium hover:text-emerald-300 transition-colors">
-                Learn More &rarr;
+                {t.solutions.learnMore} &rarr;
               </a>
             </motion.div>
           ))}

@@ -2,53 +2,56 @@
 
 import { motion } from "framer-motion";
 import { Quote, TrendingUp } from "lucide-react";
-
-const studies = [
-  {
-    company: "MedFirst Clinic",
-    industry: "Healthcare",
-    challenge: "200+ daily patient calls overwhelming a 3-person team",
-    solution: "AI voice agent for appointment scheduling and patient triage",
-    metrics: [
-      { label: "Call Deflection", value: "73%" },
-      { label: "Fewer No-Shows", value: "45%" },
-      { label: "Monthly Savings", value: "$12,400" },
-      { label: "Patient Satisfaction", value: "4.8/5" },
-    ],
-    quote: "VoiceFlow AI transformed our front desk operations. Patients love the instant scheduling, and our staff can finally focus on in-person care.",
-    person: "Dr. Sarah Chen, Medical Director",
-  },
-  {
-    company: "Apex Realty Group",
-    industry: "Real Estate",
-    challenge: "Missing 60% of after-hours leads with no follow-up system",
-    solution: "AI chatbot + voice agent for 24/7 lead qualification",
-    metrics: [
-      { label: "More Qualified Leads", value: "340%" },
-      { label: "Faster Response", value: "28%" },
-      { label: "New Monthly Revenue", value: "$31,000" },
-      { label: "Lead Capture Rate", value: "89%" },
-    ],
-    quote: "We went from missing most after-hours inquiries to capturing nearly every single lead. The ROI was obvious within the first month.",
-    person: "Marcus Johnson, Broker/Owner",
-  },
-  {
-    company: "ShopWave",
-    industry: "E-Commerce",
-    challenge: "8-hour average support response time driving customers away",
-    solution: "AI chatbot handling orders, returns, and product questions",
-    metrics: [
-      { label: "Response Time", value: "2 sec" },
-      { label: "Auto-Resolution", value: "82%" },
-      { label: "Monthly Savings", value: "$18,700" },
-      { label: "Customer Satisfaction", value: "92%" },
-    ],
-    quote: "Our customers used to wait hours for a response. Now they get instant, accurate help around the clock. Support tickets dropped dramatically.",
-    person: "Lisa Park, Head of Customer Experience",
-  },
-];
+import { useLanguage } from "../i18n/LanguageContext";
 
 export default function CaseStudies() {
+  const { t } = useLanguage();
+
+  const studies = [
+    {
+      company: t.caseStudies.med.name,
+      industry: t.caseStudies.med.industry,
+      challenge: t.caseStudies.med.challenge,
+      solution: t.caseStudies.med.solution,
+      metrics: [
+        { label: t.caseStudies.med.m1l, value: t.caseStudies.med.m1 },
+        { label: t.caseStudies.med.m2l, value: t.caseStudies.med.m2 },
+        { label: t.caseStudies.med.m3l, value: t.caseStudies.med.m3 },
+        { label: t.caseStudies.med.m4l, value: t.caseStudies.med.m4 },
+      ],
+      quote: t.caseStudies.med.quote,
+      person: t.caseStudies.med.person,
+    },
+    {
+      company: t.caseStudies.apex.name,
+      industry: t.caseStudies.apex.industry,
+      challenge: t.caseStudies.apex.challenge,
+      solution: t.caseStudies.apex.solution,
+      metrics: [
+        { label: t.caseStudies.apex.m1l, value: t.caseStudies.apex.m1 },
+        { label: t.caseStudies.apex.m2l, value: t.caseStudies.apex.m2 },
+        { label: t.caseStudies.apex.m3l, value: t.caseStudies.apex.m3 },
+        { label: t.caseStudies.apex.m4l, value: t.caseStudies.apex.m4 },
+      ],
+      quote: t.caseStudies.apex.quote,
+      person: t.caseStudies.apex.person,
+    },
+    {
+      company: t.caseStudies.shop.name,
+      industry: t.caseStudies.shop.industry,
+      challenge: t.caseStudies.shop.challenge,
+      solution: t.caseStudies.shop.solution,
+      metrics: [
+        { label: t.caseStudies.shop.m1l, value: t.caseStudies.shop.m1 },
+        { label: t.caseStudies.shop.m2l, value: t.caseStudies.shop.m2 },
+        { label: t.caseStudies.shop.m3l, value: t.caseStudies.shop.m3 },
+        { label: t.caseStudies.shop.m4l, value: t.caseStudies.shop.m4 },
+      ],
+      quote: t.caseStudies.shop.quote,
+      person: t.caseStudies.shop.person,
+    },
+  ];
+
   return (
     <section id="case-studies" className="py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -59,10 +62,10 @@ export default function CaseStudies() {
           className="text-center mb-16"
         >
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-            Real Results From <span className="gradient-text">Real Businesses</span>
+            {t.caseStudies.headline} <span className="gradient-text">{t.caseStudies.headlineAccent}</span>
           </h2>
           <p className="text-slate-400 max-w-2xl mx-auto text-lg">
-            See how companies like yours are saving thousands with AI-powered customer service.
+            {t.caseStudies.subtitle}
           </p>
         </motion.div>
 
@@ -92,11 +95,11 @@ export default function CaseStudies() {
 
                   <div className="space-y-3 mb-6">
                     <p className="text-sm">
-                      <span className="text-slate-500 font-medium">Challenge: </span>
+                      <span className="text-slate-500 font-medium">{t.caseStudies.challenge} </span>
                       <span className="text-slate-300">{study.challenge}</span>
                     </p>
                     <p className="text-sm">
-                      <span className="text-slate-500 font-medium">Solution: </span>
+                      <span className="text-slate-500 font-medium">{t.caseStudies.solution} </span>
                       <span className="text-slate-300">{study.solution}</span>
                     </p>
                   </div>

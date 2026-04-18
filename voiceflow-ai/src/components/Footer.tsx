@@ -1,10 +1,7 @@
 "use client";
 
 import { Zap, Globe, ExternalLink, Code, Play } from "lucide-react";
-
-const solutions = ["Healthcare", "Real Estate", "E-Commerce", "Legal", "Home Services", "Agencies"];
-const companyLinks = ["About", "Careers", "Blog", "Contact", "Partners"];
-const resources = ["Documentation", "API Reference", "Status Page", "Privacy Policy", "Terms of Service"];
+import { useLanguage } from "../i18n/LanguageContext";
 
 const socials = [
   { icon: Globe, label: "Twitter" },
@@ -14,6 +11,15 @@ const socials = [
 ];
 
 export default function Footer() {
+  const { t } = useLanguage();
+
+  const solutions = [
+    t.solutions.healthcare, t.solutions.realEstate, t.solutions.ecommerce,
+    t.solutions.legal, t.solutions.homeServices, t.solutions.agencies,
+  ];
+  const companyLinks = [t.footer.about, t.footer.careers, t.footer.blog, t.footer.contact, t.footer.partners];
+  const resources = [t.footer.docs, t.footer.apiRef, t.footer.status, t.footer.privacy, t.footer.terms];
+
   return (
     <footer className="bg-slate-900 border-t border-slate-800/50 pt-16 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -24,7 +30,7 @@ export default function Footer() {
               <span className="text-lg font-bold gradient-text">VoiceFlow AI</span>
             </div>
             <p className="text-slate-500 text-sm mb-6">
-              AI-powered customer service that never sleeps.
+              {t.footer.tagline}
             </p>
             <div className="flex gap-3">
               {socials.map((s) => (
@@ -41,7 +47,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold text-white mb-4">Solutions</h4>
+            <h4 className="text-sm font-semibold text-white mb-4">{t.footer.solutions}</h4>
             <ul className="space-y-2">
               {solutions.map((item) => (
                 <li key={item}>
@@ -54,7 +60,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold text-white mb-4">Company</h4>
+            <h4 className="text-sm font-semibold text-white mb-4">{t.footer.company}</h4>
             <ul className="space-y-2">
               {companyLinks.map((item) => (
                 <li key={item}>
@@ -67,7 +73,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold text-white mb-4">Resources</h4>
+            <h4 className="text-sm font-semibold text-white mb-4">{t.footer.resources}</h4>
             <ul className="space-y-2">
               {resources.map((item) => (
                 <li key={item}>
@@ -82,10 +88,10 @@ export default function Footer() {
 
         <div className="border-t border-slate-800/50 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-sm text-slate-500">
-            &copy; 2024 VoiceFlow AI. All rights reserved.
+            {t.footer.copyright}
           </p>
           <p className="text-sm text-slate-600">
-            Built with Voiceflow + ElevenLabs + Twilio
+            {t.footer.builtWith}
           </p>
         </div>
       </div>

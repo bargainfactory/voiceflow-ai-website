@@ -5,27 +5,7 @@ import {
   LayoutDashboard, MessageSquare, Bot, BarChart3, Settings,
   Bell, Search, CheckCircle, Clock, AlertTriangle,
 } from "lucide-react";
-
-const sidebarItems = [
-  { icon: LayoutDashboard, label: "Overview", active: true },
-  { icon: MessageSquare, label: "Conversations" },
-  { icon: Bot, label: "Agents" },
-  { icon: BarChart3, label: "Analytics" },
-  { icon: Settings, label: "Settings" },
-];
-
-const stats = [
-  { label: "Total Conversations", value: "12,847", change: "+12.5%" },
-  { label: "Resolution Rate", value: "94.2%", change: "+3.1%" },
-  { label: "Avg Response Time", value: "1.8s", change: "-0.4s" },
-  { label: "Customer Satisfaction", value: "4.7/5", change: "+0.2" },
-];
-
-const conversations = [
-  { name: "Sarah M.", topic: "Order tracking #4521", status: "resolved", time: "2m ago" },
-  { name: "James L.", topic: "Product return request", status: "in-progress", time: "5m ago" },
-  { name: "Emily R.", topic: "Billing dispute", status: "escalated", time: "8m ago" },
-];
+import { useLanguage } from "../i18n/LanguageContext";
 
 const statusConfig: Record<string, { color: string; icon: typeof CheckCircle }> = {
   resolved: { color: "text-emerald-400 bg-emerald-400/10", icon: CheckCircle },
@@ -34,6 +14,29 @@ const statusConfig: Record<string, { color: string; icon: typeof CheckCircle }> 
 };
 
 export default function Dashboard() {
+  const { t } = useLanguage();
+
+  const sidebarItems = [
+    { icon: LayoutDashboard, label: t.dashboard.overview, active: true },
+    { icon: MessageSquare, label: t.dashboard.conversations },
+    { icon: Bot, label: t.dashboard.agentsNav },
+    { icon: BarChart3, label: t.dashboard.analytics },
+    { icon: Settings, label: t.dashboard.settings },
+  ];
+
+  const stats = [
+    { label: t.dashboard.totalConvos, value: "12,847", change: "+12.5%" },
+    { label: t.dashboard.resolutionRate, value: "94.2%", change: "+3.1%" },
+    { label: t.dashboard.avgResponse, value: "1.8s", change: "-0.4s" },
+    { label: t.dashboard.customerSat, value: "4.7/5", change: "+0.2" },
+  ];
+
+  const conversations = [
+    { name: "Sarah M.", topic: "Order tracking #4521", status: "resolved", statusLabel: t.dashboard.resolved, time: "2m ago" },
+    { name: "James L.", topic: "Product return request", status: "in-progress", statusLabel: t.dashboard.inProgress, time: "5m ago" },
+    { name: "Emily R.", topic: "Billing dispute", status: "escalated", statusLabel: t.dashboard.escalated, time: "8m ago" },
+  ];
+
   return (
     <section id="dashboard" className="py-24 grid-bg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -44,10 +47,10 @@ export default function Dashboard() {
           className="text-center mb-16"
         >
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-            Your <span className="gradient-text">Command Center</span>
+            {t.dashboard.headline} <span className="gradient-text">{t.dashboard.headlineAccent}</span>
           </h2>
           <p className="text-slate-400 max-w-2xl mx-auto text-lg">
-            Monitor every conversation, track performance, and optimize your AI agents from one dashboard.
+            {t.dashboard.subtitle}
           </p>
         </motion.div>
 
@@ -63,7 +66,7 @@ export default function Dashboard() {
               <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
               <div className="w-3 h-3 rounded-full bg-green-500/80" />
             </div>
-            <span className="text-sm text-slate-400 ml-3">VoiceFlow AI Dashboard</span>
+            <span className="text-sm text-slate-400 ml-3">{t.dashboard.title}</span>
             <div className="ml-auto flex items-center gap-3">
               <Search className="w-4 h-4 text-slate-500" />
               <Bell className="w-4 h-4 text-slate-500" />
@@ -102,7 +105,7 @@ export default function Dashboard() {
               </div>
 
               <div className="bg-slate-800/50 rounded-xl p-4">
-                <p className="text-sm text-slate-400 mb-4">Conversation Volume (7 days)</p>
+                <p className="text-sm text-slate-400 mb-4">{t.dashboard.chartTitle}</p>
                 <div className="h-32 flex items-end gap-2">
                   {[35, 52, 48, 61, 45, 72, 58].map((h, i) => (
                     <div key={i} className="flex-1 flex flex-col items-center gap-1">
@@ -119,7 +122,7 @@ export default function Dashboard() {
               </div>
 
               <div className="bg-slate-800/50 rounded-xl p-4">
-                <p className="text-sm text-slate-400 mb-4">Recent Conversations</p>
+                <p className="text-sm text-slate-400 mb-4">{t.dashboard.recentTitle}</p>
                 <div className="space-y-3">
                   {conversations.map((conv) => {
                     const cfg = statusConfig[conv.status];
@@ -138,7 +141,7 @@ export default function Dashboard() {
                         <div className="flex items-center gap-3">
                           <span className={"text-xs px-2 py-1 rounded-full flex items-center gap-1 " + cfg.color}>
                             <StatusIcon className="w-3 h-3" />
-                            {conv.status}
+                            {conv.statusLabel}
                           </span>
                           <span className="text-xs text-slate-500">{conv.time}</span>
                         </div>
@@ -156,7 +159,7 @@ export default function Dashboard() {
             href="#quote"
             className="inline-flex px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition-all hover:shadow-lg hover:shadow-emerald-500/25"
           >
-            Get Full Dashboard Access
+            {t.dashboard.getAccess}
           </a>
         </div>
       </div>

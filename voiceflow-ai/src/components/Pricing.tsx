@@ -2,63 +2,52 @@
 
 import { motion } from "framer-motion";
 import { Check, Star } from "lucide-react";
-
-const tiers = [
-  {
-    name: "Starter",
-    audience: "Small businesses",
-    setup: "$2,497",
-    monthly: "$497",
-    popular: false,
-    features: [
-      "1 AI chatbot",
-      "500 conversations/mo",
-      "Email support",
-      "Basic analytics",
-      "Voiceflow integration",
-      "1 language",
-    ],
-    cta: "Get Started",
-  },
-  {
-    name: "Professional",
-    audience: "Growing businesses",
-    setup: "$4,997",
-    monthly: "$997",
-    popular: true,
-    features: [
-      "AI chatbot + voice agent",
-      "2,500 conversations/mo",
-      "Priority support",
-      "Advanced analytics",
-      "Voiceflow + Twilio + ElevenLabs",
-      "5 languages",
-      "CRM integration",
-      "Lead qualification",
-    ],
-    cta: "Start Free Trial",
-  },
-  {
-    name: "Enterprise",
-    audience: "Large organizations & agencies",
-    setup: "Custom",
-    monthly: "Custom",
-    popular: false,
-    features: [
-      "Unlimited agents",
-      "Unlimited conversations",
-      "Dedicated account manager",
-      "Custom integrations",
-      "White-label option",
-      "All languages",
-      "SLA guarantee",
-      "Custom AI training",
-    ],
-    cta: "Contact Sales",
-  },
-];
+import { useLanguage } from "../i18n/LanguageContext";
 
 export default function Pricing() {
+  const { t } = useLanguage();
+
+  const tiers = [
+    {
+      name: t.pricing.starter,
+      audience: t.pricing.starterAudience,
+      setup: "$2,497",
+      monthly: "$497",
+      popular: false,
+      features: [
+        t.pricing.f_chatbot1, t.pricing.f_convos500, t.pricing.f_emailSupport,
+        t.pricing.f_basicAnalytics, t.pricing.f_voiceflow, t.pricing.f_lang1,
+      ],
+      cta: t.pricing.getStarted,
+    },
+    {
+      name: t.pricing.professional,
+      audience: t.pricing.professionalAudience,
+      setup: "$4,997",
+      monthly: "$997",
+      popular: true,
+      features: [
+        t.pricing.f_chatVoice, t.pricing.f_convos2500, t.pricing.f_prioritySupport,
+        t.pricing.f_advancedAnalytics, t.pricing.f_fullStack, t.pricing.f_lang5,
+        t.pricing.f_crm, t.pricing.f_leadQual,
+      ],
+      cta: t.pricing.startTrial,
+    },
+    {
+      name: t.pricing.enterprise,
+      audience: t.pricing.enterpriseAudience,
+      setup: "Custom",
+      monthly: "Custom",
+      popular: false,
+      features: [
+        t.pricing.f_unlimitedAgents, t.pricing.f_unlimitedConvos, t.pricing.f_dedicatedManager,
+        t.pricing.f_customIntegrations, t.pricing.f_whiteLabel, t.pricing.f_allLangs,
+        t.pricing.f_sla, t.pricing.f_customTraining,
+      ],
+      cta: t.pricing.contactSales,
+    },
+  ];
+
   return (
     <section id="pricing" className="py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -69,10 +58,10 @@ export default function Pricing() {
           className="text-center mb-16"
         >
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-            Simple, <span className="gradient-text">Transparent Pricing</span>
+            {t.pricing.headline} <span className="gradient-text">{t.pricing.headlineAccent}</span>
           </h2>
           <p className="text-slate-400 max-w-2xl mx-auto text-lg">
-            Setup fee + monthly. No hidden costs. Scale as you grow.
+            {t.pricing.subtitle}
           </p>
         </motion.div>
 
@@ -91,7 +80,7 @@ export default function Pricing() {
               {tier.popular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-1 px-4 py-1 bg-emerald-600 text-white text-xs font-semibold rounded-full">
                   <Star className="w-3 h-3" />
-                  Most Popular
+                  {t.pricing.mostPopular}
                 </div>
               )}
 
@@ -101,10 +90,10 @@ export default function Pricing() {
               <div className="mb-6">
                 <div className="flex items-baseline gap-1">
                   <span className="text-3xl font-bold text-white">{tier.monthly}</span>
-                  {tier.monthly !== "Custom" && <span className="text-slate-400 text-sm">/month</span>}
+                  {tier.monthly !== "Custom" && <span className="text-slate-400 text-sm">{t.pricing.month}</span>}
                 </div>
                 <p className="text-slate-500 text-sm mt-1">
-                  {tier.setup !== "Custom" ? tier.setup + " setup fee" : "Custom setup & pricing"}
+                  {tier.setup !== "Custom" ? tier.setup + " " + t.pricing.setupFee : t.pricing.customPricing}
                 </p>
               </div>
 

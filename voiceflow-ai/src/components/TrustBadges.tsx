@@ -2,19 +2,22 @@
 
 import { motion } from "framer-motion";
 import { Shield, Server, Lock } from "lucide-react";
+import { useLanguage } from "../i18n/LanguageContext";
 
 const logos = [
   "TechCorp", "MedFirst", "Apex Realty", "ShopWave",
   "LegalEase", "HomeFlow", "AgencyX", "ScaleUp",
 ];
 
-const badges = [
-  { icon: Shield, label: "SOC 2 Compliant" },
-  { icon: Server, label: "99.9% Uptime SLA" },
-  { icon: Lock, label: "HIPAA Ready" },
-];
-
 export default function TrustBadges() {
+  const { t } = useLanguage();
+
+  const badges = [
+    { icon: Shield, label: t.trust.soc2 },
+    { icon: Server, label: t.trust.uptime },
+    { icon: Lock, label: t.trust.hipaa },
+  ];
+
   return (
     <section className="py-16 border-y border-slate-800/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -24,7 +27,7 @@ export default function TrustBadges() {
           viewport={{ once: true }}
           className="text-center text-sm text-slate-500 uppercase tracking-widest mb-8"
         >
-          Trusted by 500+ businesses worldwide
+          {t.trust.headline}
         </motion.p>
 
         <div className="relative overflow-hidden mb-12">

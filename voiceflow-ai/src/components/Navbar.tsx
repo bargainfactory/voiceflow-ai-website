@@ -3,19 +3,22 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Zap } from "lucide-react";
-
-const navLinks = [
-  { label: "Solutions", href: "#solutions" },
-  { label: "Demo", href: "#demo" },
-  { label: "Pricing", href: "#pricing" },
-  { label: "Case Studies", href: "#case-studies" },
-  { label: "ROI Calculator", href: "#roi" },
-  { label: "Dashboard", href: "#dashboard" },
-];
+import { useLanguage } from "../i18n/LanguageContext";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 export default function Navbar() {
+  const { t } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const navLinks = [
+    { label: t.nav.solutions, href: "#solutions" },
+    { label: t.nav.demo, href: "#demo" },
+    { label: t.nav.pricing, href: "#pricing" },
+    { label: t.nav.caseStudies, href: "#case-studies" },
+    { label: t.nav.roiCalculator, href: "#roi" },
+    { label: t.nav.dashboard, href: "#dashboard" },
+  ];
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -51,11 +54,12 @@ export default function Navbar() {
                 {link.label}
               </a>
             ))}
+            <LanguageSwitcher />
             <a
               href="#demo"
               className="ml-2 px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-lg transition-all hover:shadow-lg hover:shadow-emerald-500/25"
             >
-              Try the Demo
+              {t.nav.tryDemo}
             </a>
           </div>
 
@@ -87,12 +91,15 @@ export default function Navbar() {
                   {link.label}
                 </a>
               ))}
+              <div className="py-2">
+                <LanguageSwitcher />
+              </div>
               <a
                 href="#demo"
                 onClick={() => setMobileOpen(false)}
                 className="block text-center px-5 py-2.5 bg-emerald-600 text-white text-sm font-semibold rounded-lg mt-3"
               >
-                Try the Demo
+                {t.nav.tryDemo}
               </a>
             </div>
           </motion.div>

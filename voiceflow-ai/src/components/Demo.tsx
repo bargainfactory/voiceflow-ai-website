@@ -4,34 +4,220 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Phone, PhoneOff, Send, Mic, Volume2 } from "lucide-react";
 import { useLanguage } from "../i18n/LanguageContext";
+import type { LangCode } from "../i18n";
 
 type Message = { role: "ai" | "user"; text: string };
+type VoiceLine = { text: string; rate: number; pitch: number; pause: number };
 
-const voiceScript = [
-  { text: "Hello, thanks for calling VoiceFlow AI", rate: 0.88, pitch: 1.0, pause: 600 },
-  { text: "This is Alex, how's it going today", rate: 0.88, pitch: 1.0, pause: 1400 },
-  { text: "So I'm really glad you called", rate: 0.87, pitch: 0.97, pause: 500 },
-  { text: "I'd love to help you figure out how we can make things easier for your business", rate: 0.86, pitch: 0.97, pause: 1100 },
-  { text: "Let me give you the quick version of what we do", rate: 0.9, pitch: 0.98, pause: 700 },
-  { text: "Basically we build AI agents that talk to your customers", rate: 0.87, pitch: 0.96, pause: 500 },
-  { text: "Just like I'm talking to you right now, pretty cool right", rate: 0.88, pitch: 0.97, pause: 1200 },
-  { text: "And honestly, the results have been incredible", rate: 0.88, pitch: 0.98, pause: 500 },
-  { text: "I've helped hundreds of businesses with exactly this", rate: 0.87, pitch: 0.97, pause: 900 },
-  { text: "Most of our clients are cutting their support costs by about 70 percent", rate: 0.85, pitch: 0.95, pause: 500 },
-  { text: "Some even more than that", rate: 0.88, pitch: 0.96, pause: 1100 },
-  { text: "Here's the part I love though, it works twenty four seven", rate: 0.86, pitch: 0.97, pause: 500 },
-  { text: "So at 3 AM when nobody wants to answer the phone, your AI agent's got it covered", rate: 0.84, pitch: 0.97, pause: 1300 },
-  { text: "Appointment booking, lead qualification, customer support, all handled automatically", rate: 0.87, pitch: 0.96, pause: 900 },
-  { text: "And we use some really great technology", rate: 0.87, pitch: 0.96, pause: 400 },
-  { text: "Voiceflow for conversations, Eleven Labs for voice, and Twilio for the phone system", rate: 0.86, pitch: 0.96, pause: 1000 },
-  { text: "So here's what I'd suggest if you're open to it", rate: 0.9, pitch: 0.98, pause: 800 },
-  { text: "Over on the right side of your screen there's a chat you can try", rate: 0.87, pitch: 0.97, pause: 500 },
-  { text: "Go ahead and ask me anything in there, I'll respond just like I would for your customers", rate: 0.86, pitch: 0.97, pause: 1100 },
-  { text: "And if you like what you see, we've got a few pilot slots open this month", rate: 0.86, pitch: 0.98, pause: 500 },
-  { text: "We can set one up for you, no pressure at all", rate: 0.85, pitch: 0.98, pause: 1000 },
-  { text: "Does that sound good", rate: 0.9, pitch: 1.01, pause: 600 },
-  { text: "Awesome, I'm really happy you reached out, talk to you soon", rate: 0.9, pitch: 1.01, pause: 0 },
-];
+const voiceScripts: Record<LangCode, VoiceLine[]> = {
+  en: [
+    { text: "Hello, thanks for calling VoiceFlow AI", rate: 0.88, pitch: 1.0, pause: 600 },
+    { text: "This is Alex, how's it going today", rate: 0.88, pitch: 1.0, pause: 1400 },
+    { text: "So I'm really glad you called", rate: 0.87, pitch: 0.97, pause: 500 },
+    { text: "I'd love to help you figure out how we can make things easier for your business", rate: 0.86, pitch: 0.97, pause: 1100 },
+    { text: "Let me give you the quick version of what we do", rate: 0.9, pitch: 0.98, pause: 700 },
+    { text: "Basically we build AI agents that talk to your customers", rate: 0.87, pitch: 0.96, pause: 500 },
+    { text: "Just like I'm talking to you right now, pretty cool right", rate: 0.88, pitch: 0.97, pause: 1200 },
+    { text: "And honestly, the results have been incredible", rate: 0.88, pitch: 0.98, pause: 500 },
+    { text: "I've helped hundreds of businesses with exactly this", rate: 0.87, pitch: 0.97, pause: 900 },
+    { text: "Most of our clients are cutting their support costs by about 70 percent", rate: 0.85, pitch: 0.95, pause: 500 },
+    { text: "Some even more than that", rate: 0.88, pitch: 0.96, pause: 1100 },
+    { text: "Here's the part I love though, it works twenty four seven", rate: 0.86, pitch: 0.97, pause: 500 },
+    { text: "So at 3 AM when nobody wants to answer the phone, your AI agent's got it covered", rate: 0.84, pitch: 0.97, pause: 1300 },
+    { text: "Appointment booking, lead qualification, customer support, all handled automatically", rate: 0.87, pitch: 0.96, pause: 900 },
+    { text: "And we use some really great technology", rate: 0.87, pitch: 0.96, pause: 400 },
+    { text: "Voiceflow for conversations, Eleven Labs for voice, and Twilio for the phone system", rate: 0.86, pitch: 0.96, pause: 1000 },
+    { text: "So here's what I'd suggest if you're open to it", rate: 0.9, pitch: 0.98, pause: 800 },
+    { text: "Over on the right side of your screen there's a chat you can try", rate: 0.87, pitch: 0.97, pause: 500 },
+    { text: "Go ahead and ask me anything in there, I'll respond just like I would for your customers", rate: 0.86, pitch: 0.97, pause: 1100 },
+    { text: "And if you like what you see, we've got a few pilot slots open this month", rate: 0.86, pitch: 0.98, pause: 500 },
+    { text: "We can set one up for you, no pressure at all", rate: 0.85, pitch: 0.98, pause: 1000 },
+    { text: "Does that sound good", rate: 0.9, pitch: 1.01, pause: 600 },
+    { text: "Awesome, I'm really happy you reached out, talk to you soon", rate: 0.9, pitch: 1.01, pause: 0 },
+  ],
+  es: [
+    { text: "Hola, gracias por llamar a VoiceFlow AI", rate: 0.88, pitch: 1.0, pause: 600 },
+    { text: "Soy Alex, como estas hoy", rate: 0.88, pitch: 1.0, pause: 1400 },
+    { text: "Me alegra mucho que hayas llamado", rate: 0.87, pitch: 0.97, pause: 500 },
+    { text: "Me encantaría ayudarte a descubrir como podemos facilitar las cosas para tu negocio", rate: 0.86, pitch: 0.97, pause: 1100 },
+    { text: "Déjame darte la versión rápida de lo que hacemos", rate: 0.9, pitch: 0.98, pause: 700 },
+    { text: "Básicamente construimos agentes de inteligencia artificial que hablan con tus clientes", rate: 0.87, pitch: 0.96, pause: 500 },
+    { text: "Tal como estoy hablando contigo ahora mismo, bastante genial verdad", rate: 0.88, pitch: 0.97, pause: 1200 },
+    { text: "Y honestamente, los resultados han sido increíbles", rate: 0.88, pitch: 0.98, pause: 500 },
+    { text: "He ayudado a cientos de negocios con exactamente esto", rate: 0.87, pitch: 0.97, pause: 900 },
+    { text: "La mayoría de nuestros clientes están reduciendo sus costos de soporte en un 70 por ciento", rate: 0.85, pitch: 0.95, pause: 500 },
+    { text: "Algunos incluso más que eso", rate: 0.88, pitch: 0.96, pause: 1100 },
+    { text: "Y lo mejor es que funciona las veinticuatro horas del día, los siete días de la semana", rate: 0.86, pitch: 0.97, pause: 500 },
+    { text: "Así que a las 3 de la mañana cuando nadie quiere contestar el teléfono, tu agente lo tiene cubierto", rate: 0.84, pitch: 0.97, pause: 1300 },
+    { text: "Reservas de citas, calificación de leads, soporte al cliente, todo manejado automáticamente", rate: 0.87, pitch: 0.96, pause: 900 },
+    { text: "Si te interesa, en la parte derecha de tu pantalla hay un chat que puedes probar", rate: 0.87, pitch: 0.97, pause: 500 },
+    { text: "Pregúntame lo que quieras ahí, responderé tal como lo haría con tus clientes", rate: 0.86, pitch: 0.97, pause: 1100 },
+    { text: "Te parece bien", rate: 0.9, pitch: 1.01, pause: 600 },
+    { text: "Genial, estoy muy contento de que te hayas comunicado, hablamos pronto", rate: 0.9, pitch: 1.01, pause: 0 },
+  ],
+  fr: [
+    { text: "Bonjour, merci d'avoir appelé VoiceFlow AI", rate: 0.88, pitch: 1.0, pause: 600 },
+    { text: "Je suis Alex, comment allez-vous aujourd'hui", rate: 0.88, pitch: 1.0, pause: 1400 },
+    { text: "Je suis vraiment content que vous ayez appelé", rate: 0.87, pitch: 0.97, pause: 500 },
+    { text: "J'aimerais vous aider à découvrir comment nous pouvons faciliter les choses pour votre entreprise", rate: 0.86, pitch: 0.97, pause: 1100 },
+    { text: "Laissez-moi vous donner la version rapide de ce que nous faisons", rate: 0.9, pitch: 0.98, pause: 700 },
+    { text: "En gros, nous construisons des agents d'intelligence artificielle qui parlent avec vos clients", rate: 0.87, pitch: 0.96, pause: 500 },
+    { text: "Exactement comme je vous parle en ce moment, plutôt cool non", rate: 0.88, pitch: 0.97, pause: 1200 },
+    { text: "Et honnêtement, les résultats ont été incroyables", rate: 0.88, pitch: 0.98, pause: 500 },
+    { text: "J'ai aidé des centaines d'entreprises avec exactement cela", rate: 0.87, pitch: 0.97, pause: 900 },
+    { text: "La plupart de nos clients réduisent leurs coûts de support d'environ 70 pour cent", rate: 0.85, pitch: 0.95, pause: 500 },
+    { text: "Et le meilleur, ça fonctionne vingt-quatre heures sur vingt-quatre, sept jours sur sept", rate: 0.86, pitch: 0.97, pause: 500 },
+    { text: "Réservation de rendez-vous, qualification de prospects, support client, tout est géré automatiquement", rate: 0.87, pitch: 0.96, pause: 900 },
+    { text: "Sur la droite de votre écran, il y a un chat que vous pouvez essayer", rate: 0.87, pitch: 0.97, pause: 500 },
+    { text: "Posez-moi n'importe quelle question, je répondrai comme je le ferais pour vos clients", rate: 0.86, pitch: 0.97, pause: 1100 },
+    { text: "Est-ce que ça vous convient", rate: 0.9, pitch: 1.01, pause: 600 },
+    { text: "Super, je suis vraiment content que vous nous ayez contactés, à bientôt", rate: 0.9, pitch: 1.01, pause: 0 },
+  ],
+  de: [
+    { text: "Hallo, vielen Dank für Ihren Anruf bei VoiceFlow AI", rate: 0.88, pitch: 1.0, pause: 600 },
+    { text: "Ich bin Alex, wie geht es Ihnen heute", rate: 0.88, pitch: 1.0, pause: 1400 },
+    { text: "Es freut mich sehr, dass Sie angerufen haben", rate: 0.87, pitch: 0.97, pause: 500 },
+    { text: "Ich würde Ihnen gerne helfen herauszufinden, wie wir die Dinge für Ihr Unternehmen einfacher machen können", rate: 0.86, pitch: 0.97, pause: 1100 },
+    { text: "Lassen Sie mich Ihnen kurz erklären, was wir machen", rate: 0.9, pitch: 0.98, pause: 700 },
+    { text: "Im Grunde bauen wir KI-Agenten, die mit Ihren Kunden sprechen", rate: 0.87, pitch: 0.96, pause: 500 },
+    { text: "Genau so wie ich jetzt mit Ihnen spreche, ziemlich cool oder", rate: 0.88, pitch: 0.97, pause: 1200 },
+    { text: "Und ehrlich gesagt waren die Ergebnisse unglaublich", rate: 0.88, pitch: 0.98, pause: 500 },
+    { text: "Ich habe Hunderten von Unternehmen genau damit geholfen", rate: 0.87, pitch: 0.97, pause: 900 },
+    { text: "Die meisten unserer Kunden senken ihre Supportkosten um etwa 70 Prozent", rate: 0.85, pitch: 0.95, pause: 500 },
+    { text: "Und das Beste ist, es funktioniert rund um die Uhr, sieben Tage die Woche", rate: 0.86, pitch: 0.97, pause: 500 },
+    { text: "Terminbuchung, Lead-Qualifizierung, Kundensupport, alles wird automatisch erledigt", rate: 0.87, pitch: 0.96, pause: 900 },
+    { text: "Auf der rechten Seite Ihres Bildschirms gibt es einen Chat, den Sie ausprobieren können", rate: 0.87, pitch: 0.97, pause: 500 },
+    { text: "Fragen Sie mich einfach alles, ich antworte genau so, wie ich es für Ihre Kunden tun würde", rate: 0.86, pitch: 0.97, pause: 1100 },
+    { text: "Klingt das gut", rate: 0.9, pitch: 1.01, pause: 600 },
+    { text: "Wunderbar, ich freue mich sehr, dass Sie sich gemeldet haben, bis bald", rate: 0.9, pitch: 1.01, pause: 0 },
+  ],
+  pt: [
+    { text: "Olá, obrigado por ligar para a VoiceFlow AI", rate: 0.88, pitch: 1.0, pause: 600 },
+    { text: "Eu sou o Alex, como você está hoje", rate: 0.88, pitch: 1.0, pause: 1400 },
+    { text: "Estou muito feliz que você ligou", rate: 0.87, pitch: 0.97, pause: 500 },
+    { text: "Adoraria ajudar você a descobrir como podemos facilitar as coisas para o seu negócio", rate: 0.86, pitch: 0.97, pause: 1100 },
+    { text: "Deixa eu te dar a versão rápida do que fazemos", rate: 0.9, pitch: 0.98, pause: 700 },
+    { text: "Basicamente construímos agentes de inteligência artificial que conversam com seus clientes", rate: 0.87, pitch: 0.96, pause: 500 },
+    { text: "Assim como estou falando com você agora, bem legal né", rate: 0.88, pitch: 0.97, pause: 1200 },
+    { text: "E honestamente, os resultados têm sido incríveis", rate: 0.88, pitch: 0.98, pause: 500 },
+    { text: "Já ajudei centenas de empresas com exatamente isso", rate: 0.87, pitch: 0.97, pause: 900 },
+    { text: "A maioria dos nossos clientes está reduzindo os custos de suporte em cerca de 70 por cento", rate: 0.85, pitch: 0.95, pause: 500 },
+    { text: "E o melhor é que funciona vinte e quatro horas por dia, sete dias por semana", rate: 0.86, pitch: 0.97, pause: 500 },
+    { text: "Agendamento de consultas, qualificação de leads, suporte ao cliente, tudo automatizado", rate: 0.87, pitch: 0.96, pause: 900 },
+    { text: "No lado direito da sua tela tem um chat que você pode experimentar", rate: 0.87, pitch: 0.97, pause: 500 },
+    { text: "Pergunte o que quiser, vou responder como faria com seus clientes", rate: 0.86, pitch: 0.97, pause: 1100 },
+    { text: "Parece bom pra você", rate: 0.9, pitch: 1.01, pause: 600 },
+    { text: "Ótimo, estou muito feliz que você entrou em contato, até logo", rate: 0.9, pitch: 1.01, pause: 0 },
+  ],
+  ja: [
+    { text: "こんにちは、VoiceFlow AIにお電話いただきありがとうございます", rate: 0.88, pitch: 1.0, pause: 600 },
+    { text: "アレックスです、今日はいかがですか", rate: 0.88, pitch: 1.0, pause: 1400 },
+    { text: "お電話いただけて本当にうれしいです", rate: 0.87, pitch: 0.97, pause: 500 },
+    { text: "御社のビジネスをもっと楽にする方法を一緒に見つけたいと思います", rate: 0.86, pitch: 0.97, pause: 1100 },
+    { text: "私たちが何をしているか、簡単にご説明しますね", rate: 0.9, pitch: 0.98, pause: 700 },
+    { text: "基本的に、お客様と会話するAIエージェントを作っています", rate: 0.87, pitch: 0.96, pause: 500 },
+    { text: "今、私がお話ししているように、すごいでしょう", rate: 0.88, pitch: 0.97, pause: 1200 },
+    { text: "正直に言って、結果は素晴らしいものでした", rate: 0.88, pitch: 0.98, pause: 500 },
+    { text: "何百もの企業様をまさにこれでお手伝いしてきました", rate: 0.87, pitch: 0.97, pause: 900 },
+    { text: "ほとんどのお客様がサポートコストを約70パーセント削減しています", rate: 0.85, pitch: 0.95, pause: 500 },
+    { text: "しかも24時間365日稼働します", rate: 0.86, pitch: 0.97, pause: 500 },
+    { text: "予約管理、リード獲得、カスタマーサポート、すべて自動で処理されます", rate: 0.87, pitch: 0.96, pause: 900 },
+    { text: "画面の右側にチャットがありますので、ぜひお試しください", rate: 0.87, pitch: 0.97, pause: 500 },
+    { text: "何でも聞いてください、お客様に対応するのと同じようにお答えします", rate: 0.86, pitch: 0.97, pause: 1100 },
+    { text: "いかがでしょうか", rate: 0.9, pitch: 1.01, pause: 600 },
+    { text: "素晴らしい、ご連絡いただけて本当にうれしいです、またお話ししましょう", rate: 0.9, pitch: 1.01, pause: 0 },
+  ],
+  zh: [
+    { text: "您好，感谢致电VoiceFlow AI", rate: 0.88, pitch: 1.0, pause: 600 },
+    { text: "我是Alex，您今天好吗", rate: 0.88, pitch: 1.0, pause: 1400 },
+    { text: "非常高兴您打来电话", rate: 0.87, pitch: 0.97, pause: 500 },
+    { text: "我很乐意帮助您了解我们如何让您的业务更轻松", rate: 0.86, pitch: 0.97, pause: 1100 },
+    { text: "让我简单介绍一下我们做什么", rate: 0.9, pitch: 0.98, pause: 700 },
+    { text: "基本上，我们构建能与您客户对话的人工智能代理", rate: 0.87, pitch: 0.96, pause: 500 },
+    { text: "就像我现在和您说话一样，很酷对吧", rate: 0.88, pitch: 0.97, pause: 1200 },
+    { text: "说实话，效果非常惊人", rate: 0.88, pitch: 0.98, pause: 500 },
+    { text: "我已经帮助了数百家企业解决了同样的问题", rate: 0.87, pitch: 0.97, pause: 900 },
+    { text: "大多数客户的支持成本降低了约百分之七十", rate: 0.85, pitch: 0.95, pause: 500 },
+    { text: "而且它全天候工作，每周七天，每天二十四小时", rate: 0.86, pitch: 0.97, pause: 500 },
+    { text: "预约安排、潜客筛选、客户支持，全部自动处理", rate: 0.87, pitch: 0.96, pause: 900 },
+    { text: "在屏幕右侧有一个聊天窗口，您可以试试", rate: 0.87, pitch: 0.97, pause: 500 },
+    { text: "随便问我什么，我会像服务您的客户一样回答", rate: 0.86, pitch: 0.97, pause: 1100 },
+    { text: "您觉得怎么样", rate: 0.9, pitch: 1.01, pause: 600 },
+    { text: "太好了，很高兴您联系我们，回头聊", rate: 0.9, pitch: 1.01, pause: 0 },
+  ],
+  ko: [
+    { text: "안녕하세요, VoiceFlow AI에 전화해 주셔서 감사합니다", rate: 0.88, pitch: 1.0, pause: 600 },
+    { text: "저는 알렉스입니다, 오늘 어떠세요", rate: 0.88, pitch: 1.0, pause: 1400 },
+    { text: "전화해 주셔서 정말 기쁩니다", rate: 0.87, pitch: 0.97, pause: 500 },
+    { text: "귀하의 비즈니스를 더 쉽게 만들 수 있는 방법을 함께 찾아보고 싶습니다", rate: 0.86, pitch: 0.97, pause: 1100 },
+    { text: "저희가 하는 일을 간단히 설명해 드리겠습니다", rate: 0.9, pitch: 0.98, pause: 700 },
+    { text: "기본적으로 고객과 대화하는 인공지능 에이전트를 만듭니다", rate: 0.87, pitch: 0.96, pause: 500 },
+    { text: "지금 제가 말하고 있는 것처럼요, 멋지지 않나요", rate: 0.88, pitch: 0.97, pause: 1200 },
+    { text: "솔직히 말씀드리면 결과가 정말 놀라웠습니다", rate: 0.88, pitch: 0.98, pause: 500 },
+    { text: "수백 개의 기업을 이렇게 도와왔습니다", rate: 0.87, pitch: 0.97, pause: 900 },
+    { text: "대부분의 고객이 지원 비용을 약 70퍼센트 절감하고 있습니다", rate: 0.85, pitch: 0.95, pause: 500 },
+    { text: "게다가 일주일 내내 하루 24시간 작동합니다", rate: 0.86, pitch: 0.97, pause: 500 },
+    { text: "예약 관리, 리드 검증, 고객 지원, 모두 자동으로 처리됩니다", rate: 0.87, pitch: 0.96, pause: 900 },
+    { text: "화면 오른쪽에 채팅이 있으니 한번 사용해 보세요", rate: 0.87, pitch: 0.97, pause: 500 },
+    { text: "무엇이든 물어보세요, 고객에게 대응하듯이 답변해 드리겠습니다", rate: 0.86, pitch: 0.97, pause: 1100 },
+    { text: "좋으신가요", rate: 0.9, pitch: 1.01, pause: 600 },
+    { text: "좋습니다, 연락해 주셔서 정말 기쁩니다, 곧 다시 이야기해요", rate: 0.9, pitch: 1.01, pause: 0 },
+  ],
+  ar: [
+    { text: "مرحبا، شكرا لاتصالك بـ VoiceFlow AI", rate: 0.88, pitch: 1.0, pause: 600 },
+    { text: "أنا أليكس، كيف حالك اليوم", rate: 0.88, pitch: 1.0, pause: 1400 },
+    { text: "سعيد جدا أنك اتصلت", rate: 0.87, pitch: 0.97, pause: 500 },
+    { text: "أود مساعدتك في اكتشاف كيف يمكننا تسهيل الأمور لعملك", rate: 0.86, pitch: 0.97, pause: 1100 },
+    { text: "دعني أعطيك نبذة سريعة عما نفعله", rate: 0.9, pitch: 0.98, pause: 700 },
+    { text: "في الأساس نبني وكلاء ذكاء اصطناعي يتحدثون مع عملائك", rate: 0.87, pitch: 0.96, pause: 500 },
+    { text: "تماما كما أتحدث معك الآن، رائع أليس كذلك", rate: 0.88, pitch: 0.97, pause: 1200 },
+    { text: "وبصراحة النتائج كانت مذهلة", rate: 0.88, pitch: 0.98, pause: 500 },
+    { text: "لقد ساعدت مئات الشركات في هذا بالضبط", rate: 0.87, pitch: 0.97, pause: 900 },
+    { text: "معظم عملائنا يخفضون تكاليف الدعم بنسبة سبعين بالمئة تقريبا", rate: 0.85, pitch: 0.95, pause: 500 },
+    { text: "ويعمل على مدار الساعة طوال أيام الأسبوع", rate: 0.86, pitch: 0.97, pause: 500 },
+    { text: "حجز المواعيد وتأهيل العملاء والدعم كله يتم تلقائيا", rate: 0.87, pitch: 0.96, pause: 900 },
+    { text: "على الجانب الأيمن من شاشتك يوجد محادثة يمكنك تجربتها", rate: 0.87, pitch: 0.97, pause: 500 },
+    { text: "اسألني أي شيء هناك وسأجيب كما أفعل مع عملائك", rate: 0.86, pitch: 0.97, pause: 1100 },
+    { text: "هل يبدو ذلك جيدا", rate: 0.9, pitch: 1.01, pause: 600 },
+    { text: "رائع، سعيد جدا أنك تواصلت معنا، نتحدث قريبا", rate: 0.9, pitch: 1.01, pause: 0 },
+  ],
+};
+
+const langToBcp47: Record<LangCode, string> = {
+  en: "en", es: "es", fr: "fr", de: "de", pt: "pt", ja: "ja", zh: "zh", ko: "ko", ar: "ar",
+};
+
+const preferredVoices: Record<LangCode, string[]> = {
+  en: ["Microsoft David", "Google US English Male", "Google US English", "Daniel"],
+  es: ["Microsoft Pablo", "Google español", "Jorge", "Paulina"],
+  fr: ["Microsoft Paul", "Google français", "Thomas", "Google French"],
+  de: ["Microsoft Stefan", "Google Deutsch", "Google German", "Anna"],
+  pt: ["Microsoft Daniel", "Google português", "Google Portuguese", "Luciana"],
+  ja: ["Microsoft Ichiro", "Google 日本語", "Google Japanese", "Kyoko", "Otoya"],
+  zh: ["Microsoft Kangkang", "Google 普通话", "Google Chinese", "Ting-Ting"],
+  ko: ["Microsoft Heami", "Google 한국의", "Google Korean", "Yuna"],
+  ar: ["Microsoft Naayf", "Google العربية", "Google Arabic", "Maged"],
+};
+
+function findBestVoice(voices: SpeechSynthesisVoice[], lang: LangCode): SpeechSynthesisVoice | undefined {
+  const bcp = langToBcp47[lang];
+  const prefs = preferredVoices[lang];
+
+  for (const pref of prefs) {
+    const match = voices.find(v => v.name.includes(pref) && v.lang.startsWith(bcp));
+    if (match) return match;
+  }
+
+  for (const pref of prefs) {
+    const match = voices.find(v => v.name.includes(pref));
+    if (match) return match;
+  }
+
+  const langMatch = voices.find(v => v.lang.startsWith(bcp) && !v.name.toLowerCase().includes("female"));
+  if (langMatch) return langMatch;
+
+  return voices.find(v => v.lang.startsWith(bcp)) || voices[0];
+}
 
 const chatResponses: Record<string, string> = {
   pricing: "Great question! So it starts at $497 a month for the basics. But honestly, most folks go with the Professional at $997 because you get everything... chatbot, voice agent, CRM integration, the whole deal. Want me to break down what\u2019s included?",
@@ -110,7 +296,7 @@ function playConnectTone(audioCtx: AudioContext) {
 }
 
 export default function Demo() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [callState, setCallState] = useState<"idle" | "ringing" | "connected" | "speaking">("idle");
   const [callTime, setCallTime] = useState(0);
   const [spokenLine, setSpokenLine] = useState("");
@@ -126,6 +312,9 @@ export default function Demo() {
   const speechRef = useRef<SpeechSynthesisUtterance | null>(null);
   const scriptIndexRef = useRef(0);
   const animFrameRef = useRef<number>(0);
+  const langRef = useRef(lang);
+
+  useEffect(() => { langRef.current = lang; }, [lang]);
 
   const stopSpeech = useCallback(() => {
     if (typeof window !== "undefined") window.speechSynthesis.cancel();
@@ -154,35 +343,26 @@ export default function Demo() {
   }, []);
 
   const speakNext = useCallback(() => {
-    if (scriptIndexRef.current >= voiceScript.length) {
+    const currentLang = langRef.current;
+    const script = voiceScripts[currentLang];
+    if (scriptIndexRef.current >= script.length) {
       setCallState("connected");
       setSpokenLine("");
       animateBars(false);
       return;
     }
 
-    const line = voiceScript[scriptIndexRef.current];
+    const line = script[scriptIndexRef.current];
     const utterance = new SpeechSynthesisUtterance(line.text);
     speechRef.current = utterance;
 
     const voices = window.speechSynthesis.getVoices();
-    const preferred = voices.find(v =>
-      v.name === "Microsoft David - English (United States)"
-    ) || voices.find(v =>
-      v.name.includes("David") && v.lang.startsWith("en")
-    ) || voices.find(v =>
-      v.name.includes("Google US English") && !v.name.includes("Female")
-    ) || voices.find(v =>
-      v.name.includes("Male") && v.lang.startsWith("en-US")
-    ) || voices.find(v =>
-      v.lang === "en-US" && !v.name.includes("Female") && !v.name.includes("Zira")
-    ) || voices.find(v =>
-      v.lang.startsWith("en-US")
-    ) || voices[0];
+    const bestVoice = findBestVoice(voices, currentLang);
+    if (bestVoice) utterance.voice = bestVoice;
 
-    if (preferred) utterance.voice = preferred;
     utterance.rate = line.rate;
     utterance.pitch = line.pitch;
+    utterance.lang = langToBcp47[currentLang];
 
     const displayText = line.text;
 
